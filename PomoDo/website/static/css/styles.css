@@ -31,6 +31,12 @@ textarea {
     resize: none;
 }
 
+textarea,
+input {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 hr {
     width: 425px;
     text-align: center;
