@@ -80,7 +80,7 @@ def update_goals(user):
     sessions_today = Session.query.filter(
         Session.user_id == user.id,
         Session.session_type == 'Pomodoro',
-        # Session.skipped == False,
+        Session.skipped == False,
         Session.timestamp >= start_of_day,
         Session.timestamp < end_of_day
     ).count()
