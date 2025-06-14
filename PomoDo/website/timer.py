@@ -22,6 +22,7 @@ def pomodoro_timer():
 
     return render_template("timer.html", user=current_user)
 
+
 @timer.route('/log-session', methods=['POST'])
 @login_required
 def log_session():
@@ -45,8 +46,17 @@ def log_session():
     db.session.add(new_session)
     db.session.commit()
 
+    task = Task.query.get(task_id)
+    pomodoro_count = len([s for s in task.cycles if s.session_type == "Pomodoro"])
+
     update_goals(current_user)
-    return jsonify({'status': 'success', 'message': 'Session added!'})
+    return jsonify({
+        'status': 'success',
+        'message': 'Session added!',
+        'pomodoro_count': pomodoro_count,
+        'task_id': task_id
+    })
+
 
 @timer.route('/delete-task/<int:task_id>', methods=['POST'])
 @login_required
