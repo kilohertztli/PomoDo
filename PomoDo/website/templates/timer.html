@@ -189,7 +189,7 @@
             <div class="task-item text-theme" data-task-id="{{ task.id }}" onclick="selectTask(this)">
                 {{ task.name }}
                 <br/>
-                <small>Pomodoros completed: {{ task.cycles|length }}</small>
+                <small>Pomodoros completed: {{ task.pomodoro_count() }}</small>
             </div>
 
             <form method="POST" action="{{ url_for('timer.delete_task', task_id=task.id) }}">
