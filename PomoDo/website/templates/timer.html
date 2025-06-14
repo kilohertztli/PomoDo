@@ -31,6 +31,10 @@
     <input type="hidden" name="task_id" value="{{ user.tasks[0].id if user.tasks else '' }}">
     <input type="hidden" id="session_type" name="session_type" value="Pomodoro">
     <input type="hidden" id="duration" name="duration" value="25">
+    <audio id="bell-sound" preload="auto">
+        <source src="{{ url_for('static', filename='audio/bell.mp3') }}" type="audio/mpeg">
+    </audio>
+
 
     <script>
     let timer;
@@ -102,7 +106,13 @@
 
     function playBell() {
         const sound = new Audio("/static/audio/bell.mp3");
-        sound.play();
+        
+        if (Notification.permission === "granted") {
+        new Notification("Time's up!");
+
+        setTimeout(() => {
+            sound.play().catch(err => console.log("Bell play blocked:", err));
+        }, 200);
     }
 
     function pauseTimer() {
