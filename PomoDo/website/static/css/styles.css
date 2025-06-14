@@ -1,0 +1,289 @@
+@font-face {
+    font-family: 'CustomFont';
+    src: url('/static/fonts/印品鸿蒙体.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    background-color: white;
+    font-family: 'CustomFont', sans-serif;
+}
+
+h1 {
+    color: #ffd66b;
+}
+
+h2 {
+    color: #80d8c3;
+}
+
+h3 {
+    font-size: 105px;
+    color: #80d8c3;
+}
+
+h4 {
+    font-size: 40px;;
+}
+
+textarea {
+    resize: none;
+}
+
+hr {
+    width: 425px;
+    text-align: center;
+}
+
+body.dark-mode {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+}
+
+.dark-mode .text-theme{
+    color: #cbd0f4;
+}
+
+.dark-mode .text-theme2{
+    color: #4758ca;
+}
+
+.dark-mode .btn-primary {
+  background-color: #2a3b9a;
+  border-color: #2a3b9a;
+}
+
+.dark-mode .btn-primary:hover {
+    background-color: #223391;
+  border-color: #223391;
+}
+
+.dark-mode .btn-primary:disabled {
+    background-color: #cbd0f4;
+    border-color: #cbd0f4;
+}
+
+.dark-mode .list-group-item {
+  background-color: #2c2c2c;
+  border-color: #444;
+  color: #cbd0f4;
+}
+
+.dark-mode .task-item:hover {
+    background-color: #1e1d1d;
+    cursor: pointer;
+}
+
+.dark-mode .active-task {
+    background: linear-gradient(90deg, #2a3b9a, #bbbfe1);
+    border-left: 4px solid #2a3b9a !important;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.dark-mode .form-control {
+  background-color: #333;
+  color: #eee;
+  border: 1px solid #555;
+}
+
+.dark-mode .progress-container {
+  background-color: #555;
+}
+
+.dark-mode .progress-bar {
+  background-color: #2a3b9a;
+}
+
+.dark-mode .navbar{
+    background-color: #bbbfe1 !important;
+}
+
+.active-task {
+    background: linear-gradient(90deg, #ffd66b, #d4edda);
+    border-left: 4px solid #ffd66b !important;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.task-item:hover {
+    background-color: #fdf2de;
+    cursor: pointer;
+}
+
+.form-control {
+    width: 425px;
+    height: 50px;
+    padding: 15px 20px;
+    box-sizing: border-box;
+    border: 2px solid #aad6c7;
+    border-radius: 4px;
+    margin-top: 10px;
+    background-color: #f8f8f8;
+}
+
+.skinny {
+    width: 425px;
+}
+
+.text-theme {
+    color: #67cfb3;
+}
+
+.text-theme2 {
+    color: #ffd66b;
+}
+
+.text-border {
+    text-align: center;
+    text-shadow:
+        -2px -2px 0 white,
+        2px -2px 0 white,
+        -2px 2px 0 white,
+        2px 2px 0 white,
+        -3px 0 0 white,
+        3px 0 0 white,
+        0 -3px 0 white,
+        0 3px 0 white;
+}
+
+.active-task {
+    background-color: #d4edda;
+    font-weight: bold;
+    border-left: 5px solid #28a745;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: #80d8c3 !important;
+}
+
+.navbar-toggler {
+    position: relative;
+    z-index: 2;
+}
+
+.btn-primary {
+    background-color: #ffd66b;
+    border-color: #ffd66b;
+}
+
+.btn-primary:hover {
+    background-color: #edc65a;
+    border-color: #edc65a;
+}
+
+.btn-primary:disabled {
+    background-color: #80d8c3;
+    border-color: #80d8c3;
+}
+
+.toggle-icon {
+    background-image: url('/static/images/eye-solid.svg');
+    background-size: contain;
+    width: 30px;
+    height: 30px;
+}
+
+.container {
+    padding: 30px;
+}
+
+.flexbox {
+    display: flex;
+    float: right;
+    text-align: center;
+}
+
+.banner {
+    background-color: #ffd66b;
+}
+
+.medal-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap; /* just in case they get a ton! */
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.medal-icon {
+  width: 65px;
+  height: 65px;
+  transition: transform 0.2s ease;
+}
+
+.medal-icon:hover {
+  transform: scale(1.2) rotate(-5deg);
+}
+
+.progress-container {
+  width: 100%;
+  max-width: 300px;
+  height: 16px;
+  background-color: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0 auto 1rem auto;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #ffc107;
+  transition: width 0.4s ease;
+}
+
+.form-wrapper {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.form-group {
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #6ddac2;
+}
+
+.theme-toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 999;
+}
+
+.theme-toggle-btn img {
+  height: 32px;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle-btn:hover img {
+  transform: scale(1.1);
+}
+
+@media (max-width: 992px) {
+  .theme-toggle-btn {
+    top: 1rem;
+    right: 6rem;
+  }
+
+  .navbar-toggler {
+    top: 1rem;
+    right: 1rem;
+    position: absolute;
+  }
+}

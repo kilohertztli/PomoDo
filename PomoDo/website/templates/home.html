@@ -1,0 +1,98 @@
+{% extends "base.html" %} {% block title%}Profile{% endblock %} {% block content%}
+<div class="d-flex justify-content-between">
+    <div>
+        <h4 class="text-theme2">Hi, {{ user.first_name }}!</h4>
+        <p class="text-theme2">Ready to take on tasks efficiently today?</p>
+    </div>
+    <div>
+        <div align="center">
+            {% if user.profile_img == None %}
+            <img src="/static/images/eye-solid.png" height="70">
+            {% else %}
+            <img src="{{ url_for('static', filename='images/' + user.profile_img) }}"
+                 height="80" class="rounded-circle">
+            {% endif %}
+            <button type="button" data-toggle="collapse" data-target="#picarray"
+                    class="btn btn-primary">Change Picture
+            </button>
+        </div>
+        <div class="collapse" id="picarray">
+            <form method="POST">
+                <div class="d-flex gap-3">
+                    {% for image in images %}
+                    <label>
+                        <input type="radio" name="profile_img" value="{{ image }}" {% if user.profile_img== image
+                               %}checked{% endif %}>
+                        <img src="{{ url_for('static', filename='images/' + image) }}" width="64" height="64">
+                    </label>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+<hr/>
+<div class="text-theme" align="center">
+    <h2 class="text-theme">Daily Goals</h2>
+    <li class="list-group-item task-item">
+        <div class="d-flex justify-content-between align-items-center">
+            {% if user.goals >= 1 %}
+            <p><s>Complete 1 pomodoro session.</s></p>
+            <img src="/static/images/circle-check-solid.png" height="40">
+            {% else %}
+            <p>Complete 1 pomodoro session.</p>
+            <img src="/static/images/circle-solid.png" height="40">
+            {% endif %}
+        </div>
+    </li>
+    <li class="list-group-item task-item">
+        <div class="d-flex justify-content-between align-items-center">
+            {% if user.goals >= 2 %}
+            <p><s>Complete 2 pomodoro session.</s></p>
+            <img src="/static/images/circle-check-solid.png" height="40">
+            {% else %}
+            <p>Complete 2 pomodoro session.</p>
+            <img src="/static/images/circle-solid.png" height="40">
+            {% endif %}
+        </div>
+    </li>
+    <li class="list-group-item task-item">
+        <div class="d-flex justify-content-between align-items-center">
+            {% if user.goals >= 4 %}
+            <p><s>Complete 4 pomodoro session.</s></p>
+            <img src="/static/images/circle-check-solid.png" height="40">
+            {% else %}
+            <p>Complete 4 pomodoro session.</p>
+            <img src="/static/images/circle-solid.png" height="40">
+            {% endif %}
+        </div>
+    </li>
+    <br/>
+    {% if user.goals < 4 %}
+    <p>Complete all goals to gain a medal.</p>
+    <div class="progress-container">
+      <div class="progress-bar" style="width: {{ (user.goals / 4) * 100 }}%;"></div>
+    </div>
+    <p>{{ user.goals }} / 4 Pomodoros</p>
+    {% else %}
+    <p>All daily goals completed! Come back tomorrow.</p>
+    <div class="progress-container">
+      <div class="progress-bar" style="width:100%;"></div>
+    </div>
+    <p>4 / 4 Pomodoros</p>
+    {% endif %}
+</div>
+<hr/>
+<div align="center">
+    <h2 class="text-theme2">Medal Board</h2>
+    <p class="text-theme2">You have {{ user.medals }} medals.</p>
+    <div class="medal-row">
+        {% for medal in range(user.medals) %}
+        <img src="{{ url_for('static', filename='images/medal.png') }}"
+             alt="Medal"
+             class="medal-icon">
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

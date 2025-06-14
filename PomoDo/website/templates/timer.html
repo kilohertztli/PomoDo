@@ -1,0 +1,206 @@
+{% extends "base.html" %} {% block title%}Focus Timer{% endblock %} {% block content %}
+<div class="container" align="center">
+    <button id="pomodoro-btn"
+            type="button"
+            class="btn btn-primary"
+            onclick="setTimerType('Pomodoro', 25)">Pomodoro</button>
+    <button id="break-btn"
+            type="button"
+            class="btn btn-primary"
+            onclick="setTimerType('Break', 1)">Break</button>
+</div>
+<div align="center">
+    {% block timer %}
+        <h3 id="timer-display" class="text-theme">25:00</h3>
+    {% endblock %}
+</div>
+
+<form method="POST" action="{{ url_for('timer.log_session') }}">
+    <div class="container">
+        <div align="center">
+            <button id="start-pause-btn"
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="startTimer()">Start</button>
+            <button id="skip-btn"
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="skipSession()">Skip</button>
+        </div>
+    </div>
+    <input type="hidden" name="task_id" value="{{ user.tasks[0].id if user.tasks else '' }}">
+    <input type="hidden" id="session_type" name="session_type" value="Pomodoro">
+    <input type="hidden" id="duration" name="duration" value="25">
+
+    <script>
+    let timer;
+    let totalSeconds = 25 * 60;
+    let remainingSeconds = totalSeconds;
+    let isRunning = false;
+    let hasStarted = false;
+    let isSkipped = false;
+    let currentMode = 'Pomodoro'; // or 'Break'
+
+    if ("Notification" in window) {
+        Notification.requestPermission().then(permission => {
+            console.log("Notificaton permission:", permission)
+        })
+    }
+
+    function setTimerType(type, duration) {
+        document.getElementById('session_type').value = type;
+        document.getElementById('duration').value = duration;
+        currentMode = document.getElementById('session_type').value
+
+        totalSeconds = duration * 60;
+        remainingSeconds = totalSeconds;
+        updateDisplay();
+        updateButtons();
+    }
+
+    function updateDisplay() {
+        const minutes = Math.floor(remainingSeconds / 60);
+        const seconds = remainingSeconds % 60;
+        document.getElementById('timer-display').innerText =
+            `${String(minutes).padStart(2, '')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function updateButtons() {
+        document.getElementById("pomodoro-btn").disabled = currentMode === 'Pomodoro';
+        document.getElementById("break-btn").disabled = currentMode === 'Break';
+
+        const startPauseBtn = document.getElementById("start-pause-btn");
+        startPauseBtn.innerText = isRunning ? "Pause" : "Start";
+        startPauseBtn.onclick = isRunning ? pauseTimer : startTimer;
+
+        document.getElementById("skip-btn").style.display = hasStarted ? "inline-block" : "none";
+    }
+
+    function startTimer() {
+        if (isRunning) return;
+        isRunning = true;
+        hasStarted = true;
+        updateButtons()
+
+        timer = setInterval(() => {
+            if (remainingSeconds > 0) {
+                remainingSeconds--;
+                updateDisplay();
+            } else {
+                clearInterval(timer);
+                playBell();
+                isRunning = false;
+                hasStarted = false;
+                isSkipped = false;
+                totalSeconds = document.getElementById('duration').value * 60;
+                updateDisplay();
+                updateButtons();
+                logSession();
+            }
+        }, 1000);
+    }
+
+    function playBell() {
+        const sound = new Audio("/static/audio/bell.mp3");
+        sound.play();
+    }
+
+    function pauseTimer() {
+        clearInterval(timer);
+        isRunning = false;
+        updateButtons();
+    }
+
+    function skipSession() {
+        clearInterval(timer);
+        isRunning = false;
+        hasStarted = false;
+        isSkipped = true;
+        remainingSeconds = totalSeconds;
+        updateDisplay();
+        updateButtons();
+        logSession();
+        alert("Session skipped!");
+    }
+
+    function logSession() {
+        fetch("/log-session", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                task_id: document.getElementById("selected_task_id").value,
+                session_type: document.getElementById("session_type").value,
+                duration: parseInt(document.getElementById("duration").value),
+                skipped: isSkipped
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Log response:", data);
+            alert("Session logged!");
+        })
+        .catch(error => {
+            console.error("Logging error:", error);
+            alert("Something went wrong logging the session.");
+        });
+    }
+
+    function selectTask(element) {
+        document.querySelectorAll(".task-item").forEach(el => {
+            el.classList.remove("active-task");
+        });
+
+        element.classList.add("active-task");
+
+        const taskId = element.getAttribute("data-task-id");
+        document.getElementById("selected_task_id").value = taskId;
+
+        console.log("Selected task:", taskId);
+    }
+
+
+    updateDisplay();  // Initialize on page load
+    updateButtons();
+    </script>
+</form>
+<hr>
+<div align="center">
+    <h2 class="text-theme">Tasks</h2>
+    {% if user.tasks|length > 1 %}
+    <small class="text-theme">Choose a task you want to work on</small>
+    {% endif %}
+</div>
+<ul class="list-group list-group-flush" id="tasks">
+    {% for task in user.tasks %}
+    <li class="list-group-item task-item">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="task-item text-theme" data-task-id="{{ task.id }}" onclick="selectTask(this)">
+                {{ task.name }}
+                <br/>
+                <small>Pomodoros completed: {{ task.cycles|length }}</small>
+            </div>
+
+            <form method="POST" action="{{ url_for('timer.delete_task', task_id=task.id) }}">
+                <button type="submit"
+                    class="btn btn-primary">✖</button>
+            </form>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+
+<input type="hidden" name="task_id" id="selected_task_id" value="{{ user.tasks[0].id if user.tasks else '' }}">
+
+<form method="POST" action="{{ url_for('timer.pomodoro_timer') }}">
+    <div align="center">
+        <textarea name="task" id="task" class="form-control"></textarea>
+    </div>
+    <br />
+    <div align="center">
+        <button type="submit" class="btn btn-primary" >Add Task</button>
+    </div>
+</form>
+
+{% endblock %}
