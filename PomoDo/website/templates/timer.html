@@ -144,11 +144,12 @@
         const sound = new Audio("/static/audio/bell.mp3");
         
         if (Notification.permission === "granted") {
-        new Notification("Time's up!");
-    
-        setTimeout(() => {
-            sound.play().catch(err => console.log("Bell play blocked:", err));
-        }, 200);
+            new Notification("Time's up!");
+        
+            setTimeout(() => {
+                sound.play().catch(err => console.log("Bell play blocked:", err));
+            }, 200);
+        }
     }
     
     function pauseTimer() {
