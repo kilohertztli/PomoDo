@@ -34,146 +34,6 @@
     <audio id="bell-sound" preload="auto">
         <source src="{{ url_for('static', filename='audio/bell.mp3') }}" type="audio/mpeg">
     </audio>
-
-
-    <script>
-    let timer;
-    let totalSeconds = 25 * 60;
-    let remainingSeconds = totalSeconds;
-    let isRunning = false;
-    let hasStarted = false;
-    let isSkipped = false;
-    let currentMode = 'Pomodoro'; // or 'Break'
-
-    if ("Notification" in window) {
-        Notification.requestPermission().then(permission => {
-            console.log("Notificaton permission:", permission)
-        })
-    }
-
-    function setTimerType(type, duration) {
-        document.getElementById('session_type').value = type;
-        document.getElementById('duration').value = duration;
-        currentMode = document.getElementById('session_type').value
-
-        totalSeconds = duration * 60;
-        remainingSeconds = totalSeconds;
-        updateDisplay();
-        updateButtons();
-    }
-
-    function updateDisplay() {
-        const minutes = Math.floor(remainingSeconds / 60);
-        const seconds = remainingSeconds % 60;
-        document.getElementById('timer-display').innerText =
-            `${String(minutes).padStart(2, '')}:${String(seconds).padStart(2, '0')}`;
-    }
-
-    function updateButtons() {
-        document.getElementById("pomodoro-btn").disabled = currentMode === 'Pomodoro';
-        document.getElementById("break-btn").disabled = currentMode === 'Break';
-
-        const startPauseBtn = document.getElementById("start-pause-btn");
-        startPauseBtn.innerText = isRunning ? "Pause" : "Start";
-        startPauseBtn.onclick = isRunning ? pauseTimer : startTimer;
-
-        document.getElementById("skip-btn").style.display = hasStarted ? "inline-block" : "none";
-    }
-
-    function startTimer() {
-        if (isRunning) return;
-        isRunning = true;
-        hasStarted = true;
-        updateButtons()
-
-        timer = setInterval(() => {
-            if (remainingSeconds > 0) {
-                remainingSeconds--;
-                updateDisplay();
-            } else {
-                clearInterval(timer);
-                playBell();
-                isRunning = false;
-                hasStarted = false;
-                isSkipped = false;
-                totalSeconds = document.getElementById('duration').value * 60;
-                updateDisplay();
-                updateButtons();
-                logSession();
-            }
-        }, 1000);
-    }
-
-    function playBell() {
-        const sound = new Audio("/static/audio/bell.mp3");
-        
-        if (Notification.permission === "granted") {
-        new Notification("Time's up!");
-
-        setTimeout(() => {
-            sound.play().catch(err => console.log("Bell play blocked:", err));
-        }, 200);
-    }
-
-    function pauseTimer() {
-        clearInterval(timer);
-        isRunning = false;
-        updateButtons();
-    }
-
-    function skipSession() {
-        clearInterval(timer);
-        isRunning = false;
-        hasStarted = false;
-        isSkipped = true;
-        remainingSeconds = totalSeconds;
-        updateDisplay();
-        updateButtons();
-        logSession();
-        alert("Session skipped!");
-    }
-
-    function logSession() {
-        fetch("/log-session", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                task_id: document.getElementById("selected_task_id").value,
-                session_type: document.getElementById("session_type").value,
-                duration: parseInt(document.getElementById("duration").value),
-                skipped: isSkipped
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Log response:", data);
-            alert("Session logged!");
-        })
-        .catch(error => {
-            console.error("Logging error:", error);
-            alert("Something went wrong logging the session.");
-        });
-    }
-
-    function selectTask(element) {
-        document.querySelectorAll(".task-item").forEach(el => {
-            el.classList.remove("active-task");
-        });
-
-        element.classList.add("active-task");
-
-        const taskId = element.getAttribute("data-task-id");
-        document.getElementById("selected_task_id").value = taskId;
-
-        console.log("Selected task:", taskId);
-    }
-
-
-    updateDisplay();  // Initialize on page load
-    updateButtons();
-    </script>
 </form>
 <hr>
 <div align="center">
@@ -212,5 +72,142 @@
         <button type="submit" class="btn btn-primary" >Add Task</button>
     </div>
 </form>
-
+<script>
+    let timer;
+    let totalSeconds = 25 * 60;
+    let remainingSeconds = totalSeconds;
+    let isRunning = false;
+    let hasStarted = false;
+    let isSkipped = false;
+    let currentMode = 'Pomodoro'; // or 'Break'
+    
+    if ("Notification" in window) {
+        Notification.requestPermission().then(permission => {
+            console.log("Notificaton permission:", permission)
+        })
+    }
+    
+    function setTimerType(type, duration) {
+        document.getElementById('session_type').value = type;
+        document.getElementById('duration').value = duration;
+        currentMode = document.getElementById('session_type').value
+    
+        totalSeconds = duration * 60;
+        remainingSeconds = totalSeconds;
+        updateDisplay();
+        updateButtons();
+    }
+    
+    function updateDisplay() {
+        const minutes = Math.floor(remainingSeconds / 60);
+        const seconds = remainingSeconds % 60;
+        document.getElementById('timer-display').innerText =
+            `${String(minutes).padStart(2, '')}:${String(seconds).padStart(2, '0')}`;
+    }
+    
+    function updateButtons() {
+        document.getElementById("pomodoro-btn").disabled = currentMode === 'Pomodoro';
+        document.getElementById("break-btn").disabled = currentMode === 'Break';
+    
+        const startPauseBtn = document.getElementById("start-pause-btn");
+        startPauseBtn.innerText = isRunning ? "Pause" : "Start";
+        startPauseBtn.onclick = isRunning ? pauseTimer : startTimer;
+    
+        document.getElementById("skip-btn").style.display = hasStarted ? "inline-block" : "none";
+    }
+    
+    function startTimer() {
+        if (isRunning) return;
+        isRunning = true;
+        hasStarted = true;
+        updateButtons()
+    
+        timer = setInterval(() => {
+            if (remainingSeconds > 0) {
+                remainingSeconds--;
+                updateDisplay();
+            } else {
+                clearInterval(timer);
+                playBell();
+                isRunning = false;
+                hasStarted = false;
+                isSkipped = false;
+                totalSeconds = document.getElementById('duration').value * 60;
+                updateDisplay();
+                updateButtons();
+                logSession();
+            }
+        }, 1000);
+    }
+    
+    function playBell() {
+        const sound = new Audio("/static/audio/bell.mp3");
+        
+        if (Notification.permission === "granted") {
+        new Notification("Time's up!");
+    
+        setTimeout(() => {
+            sound.play().catch(err => console.log("Bell play blocked:", err));
+        }, 200);
+    }
+    
+    function pauseTimer() {
+        clearInterval(timer);
+        isRunning = false;
+        updateButtons();
+    }
+    
+    function skipSession() {
+        clearInterval(timer);
+        isRunning = false;
+        hasStarted = false;
+        isSkipped = true;
+        remainingSeconds = totalSeconds;
+        updateDisplay();
+        updateButtons();
+        logSession();
+        alert("Session skipped!");
+    }
+    
+    function logSession() {
+        fetch("/log-session", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                task_id: document.getElementById("selected_task_id").value,
+                session_type: document.getElementById("session_type").value,
+                duration: parseInt(document.getElementById("duration").value),
+                skipped: isSkipped
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Log response:", data);
+            alert("Session logged!");
+        })
+        .catch(error => {
+            console.error("Logging error:", error);
+            alert("Something went wrong logging the session.");
+        });
+    }
+    
+    function selectTask(element) {
+        document.querySelectorAll(".task-item").forEach(el => {
+            el.classList.remove("active-task");
+        });
+    
+        element.classList.add("active-task");
+    
+        const taskId = element.getAttribute("data-task-id");
+        document.getElementById("selected_task_id").value = taskId;
+    
+        console.log("Selected task:", taskId);
+    }
+    
+    
+    updateDisplay();  // Initialize on page load
+    updateButtons();
+</script>
 {% endblock %}
