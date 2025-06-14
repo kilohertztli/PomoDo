@@ -2,6 +2,7 @@ from . import db
 from flask_login import UserMixin
 from datetime import datetime
 
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True)
@@ -13,12 +14,17 @@ class User(db.Model, UserMixin):
     tasks = db.relationship('Task')
     sessions = db.relationship('Session')
 
+
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10000))
     completed = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     cycles = db.relationship('Session', backref='task', lazy=True)
+    
+    def pomodoro_count(self):
+        return len([s for s in self.cycles if s.session_type == "Pomodoro"])
+
 
 class Session(db.Model):
     id = db.Column(db.Integer, primary_key=True)
