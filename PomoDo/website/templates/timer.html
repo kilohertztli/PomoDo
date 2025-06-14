@@ -187,6 +187,19 @@
         .then(data => {
             console.log("Log response:", data);
             alert("Session logged!");
+
+            if (data.status === "success") {
+                const taskId = data.task_id;
+                const newCount = data.pomodoro_count;
+        
+                const taskDiv = document.querySelector(`.task-item[data-task-id="${taskId}"]`);
+                if (taskDiv) {
+                    const countDisplay = taskDiv.querySelector("small");
+                    if (countDisplay) {
+                        countDisplay.innerText = `Pomodoros completed: ${newCount}`;
+                    }
+                }
+            }
         })
         .catch(error => {
             console.error("Logging error:", error);
